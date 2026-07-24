@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 delete_book() {
     index="$1"
     book_file="$(sed -n "${index}p" "$TMP_DIR"/kindle_books.list 2>/dev/null)"
-    
+
     if [ -z "$book_file" ]; then
         echo "Invalid selection" >&2
         return 1
@@ -25,7 +25,7 @@ delete_book() {
 delete_directory() {
     index="$1"
     dir_path="$(sed -n "${index}p" "$TMP_DIR"/kindle_folders.list 2>/dev/null)"
-    
+
     if [ -z "$dir_path" ]; then
         echo "Invalid selection"
         return 1
@@ -59,10 +59,10 @@ list_local_books() {
         echo "Current directory: $current_dir"
         echo "--------------------------------"
         echo ""
-        
+
         i=1
-        : > "$TMP_DIR"/kindle_books.list
-        : > "$TMP_DIR"/kindle_folders.list
+        : >"$TMP_DIR"/kindle_books.list
+        : >"$TMP_DIR"/kindle_folders.list
 
         if [ ! -d "$current_dir" ]; then
             echo "Directory '$current_dir' does not exist." >&2
@@ -73,8 +73,8 @@ list_local_books() {
             if [ -d "$item" ]; then
                 foldername=$(basename "$item")
                 echo "$i. $foldername/"
-                echo "$item" >> "$TMP_DIR"/kindle_folders.list
-                i=$((i+1))
+                echo "$item" >>"$TMP_DIR"/kindle_folders.list
+                i=$((i + 1))
             fi
         done
 
@@ -83,65 +83,66 @@ list_local_books() {
                 filename=$(basename "$item")
                 # extension="${filename##*.}"
                 echo "$i. $filename"
-                echo "$item" >> "$TMP_DIR"/kindle_books.list
-                i=$((i+1))
+                echo "$item" >>"$TMP_DIR"/kindle_books.list
+                i=$((i + 1))
             fi
         done
-        
+
         if [ $i -eq 1 ]; then
             echo "No books or folders found."
             return 1
         fi
-        
+
         echo ""
         echo "--------------------------------"
+        echo "[0-9]: Delete book"
         echo "n: Go up to parent directory"
         echo "d: Delete directory"
         echo "q: Back to main menu"
         echo ""
 
-        total_items=$(( $(wc -l < "$TMP_DIR"/kindle_folders.list 2>/dev/null) + $(wc -l < "$TMP_DIR"/kindle_books.list 2>/dev/null) ))
-        
+        total_items=$(($(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null) + $(wc -l <"$TMP_DIR"/kindle_books.list 2>/dev/null)))
+
         echo -n "Enter choice: "
         read -r choice
-        
+
         case "$choice" in
-            [qQ])
-                return 0
-                ;;
-            [nN])
-                current_dir=$(dirname "$current_dir")
-                ;;
-            [dD])
-                echo -n "Enter directory number to delete: "
-                read -r dir_num
-                if echo "$dir_num" | grep -qE '^[0-9]+$'; then
-                    if [ "$dir_num" -le $(wc -l < "$TMP_DIR"/kindle_folders.list 2>/dev/null) ]; then
-                        delete_directory "$dir_num"
-                    else
-                        echo "Invalid directory number"
-                        sleep 2
-                    fi
-                fi
-                ;;
-            *)
-                if echo "$choice" | grep -qE '^[0-9]+$'; then
-                    if [ "$choice" -ge 1 ] && [ "$choice" -le "$total_items" ]; then
-                        if [ "$choice" -le $(wc -l < "$TMP_DIR"/kindle_folders.list 2>/dev/null) ]; then
-                            current_dir=$(sed -n "${choice}p" "$TMP_DIR"/kindle_folders.list)
-                        else
-                            file_index=$((choice - $(wc -l < "$TMP_DIR"/kindle_folders.list 2>/dev/null)))
-                            delete_book "$file_index"
-                        fi
-                    else
-                        echo "Invalid selection (must be between 1 and $total_items)"
-                        sleep 2
-                    fi
+        [qQ])
+            return 0
+            ;;
+        [nN])
+            current_dir=$(dirname "$current_dir")
+            ;;
+        [dD])
+            echo -n "Enter directory number to delete: "
+            read -r dir_num
+            if echo "$dir_num" | grep -qE '^[0-9]+$'; then
+                if [ "$dir_num" -le $(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null) ]; then
+                    delete_directory "$dir_num"
                 else
-                    echo "Invalid input"
+                    echo "Invalid directory number"
                     sleep 2
                 fi
-                ;;
+            fi
+            ;;
+        *)
+            if echo "$choice" | grep -qE '^[0-9]+$'; then
+                if [ "$choice" -ge 1 ] && [ "$choice" -le "$total_items" ]; then
+                    if [ "$choice" -le $(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null) ]; then
+                        current_dir=$(sed -n "${choice}p" "$TMP_DIR"/kindle_folders.list)
+                    else
+                        file_index=$((choice - $(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null)))
+                        delete_book "$file_index"
+                    fi
+                else
+                    echo "Invalid selection (must be between 1 and $total_items)"
+                    sleep 2
+                fi
+            else
+                echo "Invalid input"
+                sleep 2
+            fi
+            ;;
         esac
 
         set -- "$current_dir"
