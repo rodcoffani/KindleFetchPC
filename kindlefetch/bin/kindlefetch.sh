@@ -1,26 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 
-# KindleFetch
+# KindleFetchPC
 # Made by justrals
-# https://github.com/justrals/KindleFetch
+# Modified by rodcoffani
+# https://github.com/rodcoffani/KindleFetchPC
 
 # Variables
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+SCRIPT_DIR=$(dirname "$0")
 CONFIG_FILE="$SCRIPT_DIR/kindlefetch_config"
 LINK_CONFIG_FILE="$SCRIPT_DIR/link_config"
 VERSION_FILE="$SCRIPT_DIR/.version"
 ZLIB_COOKIES_FILE="$SCRIPT_DIR/zlib_cookies.txt"
-TMP_DIR="/tmp"
-BASE_DIR="/mnt/us"
+TMP_DIR="$(dirname "$0")/tmp"
+BASE_DIR="$HOME"
 
 UPDATE_AVAILABLE=false
 CREATE_SUBFOLDERS=false
 COMPACT_OUTPUT=false
 RESULTS_PER_PAGE=10
 
-# Check if running on a Kindle
-if ! { [ -f "/etc/prettyversion.txt" ] || [ -d "/mnt/us" ] || pgrep "lipc-daemon" >/dev/null; }; then
-    echo -n "This script must run on a Kindle device. Do you want to run it anyway? [y/N]: "
+# Check if is NOT running on a Kindle
+if { [ -f "/etc/prettyversion.txt" ] || [ -d "/mnt/us" ] || pgrep "lipc-daemon" >/dev/null; }; then
+    printf "This script MUST NOT run on a Kindle device. Do you want to run it anyway? [y/N]: "
     read -r kindle_override_choice
     if [ "$kindle_override_choice" = "y" ] || [ "$kindle_override_choice" = "Y" ]; then
         :
@@ -43,17 +44,17 @@ fi
 check_for_updates
 load_config
 
-[ -z "$ANNAS_URL" ] && ANNAS_URL=$(find_working_url $ANNAS_MIRROR_URLS)
-[ -z "$LGLI_URL" ] && LGLI_URL=$(find_working_url $LGLI_MIRROR_URLS)
-[ -z "$ZLIB_URL" ] && ZLIB_URL=$(find_working_url $ZLIB_MIRROR_URLS)
+[ -z "$ANNAS_URL" ] && ANNAS_URL=$(find_working_url "$ANNAS_MIRROR_URLS")
+[ -z "$LGLI_URL" ] && LGLI_URL=$(find_working_url "$LGLI_MIRROR_URLS")
+[ -z "$ZLIB_URL" ] && ZLIB_URL=$(find_working_url "$ZLIB_MIRROR_URLS")
 
 save_config
 
 main_menu() {
-    if [ "${ENFORCE_DNS}" = true ];
-    	then change_dns
+    if [ "${ENFORCE_DNS}" = true ]; then
+        change_dns
     fi
-    
+
     while true; do
         clear
         echo -e "
@@ -64,7 +65,7 @@ main_menu() {
 | . \| | | | | (_| | |  __/ | |  __/ || (__| | | |
 |_|\_\_|_| |_|\__,_|_|\___|_|  \___|\__\___|_| |_|
                                                 
-$(load_version) | https://github.com/justrals/KindleFetch
+$(load_version) | https://github.com/rodcoffani/KindleFetchPC
 "
         if $UPDATE_AVAILABLE; then
             echo "Update available! Select option 6 to install."
@@ -82,33 +83,33 @@ $(load_version) | https://github.com/justrals/KindleFetch
         echo ""
         echo -n "Choose option: "
         read -r choice
-        
+
         case "$choice" in
-            1)
-                search_books
-                ;;
-            2)
-                filters_menu
-                ;;
-            3)
-                list_local_books
-                ;;
-            4)
-                settings_menu
-                ;;
-            [qQ])
-                cleanup
-                exit 0
-                ;;
-            6)  
-                if $UPDATE_AVAILABLE; then
-                    update
-                fi
-                ;;
-            *)
-                echo "Invalid option"
-                sleep 2
-                ;;
+        1)
+            search_books
+            ;;
+        2)
+            filters_menu
+            ;;
+        3)
+            list_local_books
+            ;;
+        4)
+            settings_menu
+            ;;
+        [qQ])
+            cleanup
+            exit 0
+            ;;
+        6)
+            if $UPDATE_AVAILABLE; then
+                update
+            fi
+            ;;
+        *)
+            echo "Invalid option"
+            sleep 2
+            ;;
         esac
     done
 }
