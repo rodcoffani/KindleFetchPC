@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 update() {
-	if [ "$UPDATE_AVAILABLE" = true ]; then
+    if [ "$UPDATE_AVAILABLE" = true ]; then
         echo -n "Would you like to update? [Y/n]: "
         read -r confirm
 
@@ -10,7 +10,6 @@ update() {
             if curl -s https://justrals.github.io/KindleFetch/install.sh | sh; then
                 echo "Update installed successfully!"
                 UPDATE_AVAILABLE=false
-                VERSION=$(load_version)
                 exec exit 0
             else
                 echo "Failed to install update"

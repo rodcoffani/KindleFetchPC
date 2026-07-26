@@ -117,7 +117,7 @@ list_local_books() {
             echo -n "Enter directory number to delete: "
             read -r dir_num
             if echo "$dir_num" | grep -qE '^[0-9]+$'; then
-                if [ "$dir_num" -le $(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null) ]; then
+                if [ "$dir_num" -le "$(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null)" ]; then
                     delete_directory "$dir_num"
                 else
                     echo "Invalid directory number"
@@ -128,7 +128,7 @@ list_local_books() {
         *)
             if echo "$choice" | grep -qE '^[0-9]+$'; then
                 if [ "$choice" -ge 1 ] && [ "$choice" -le "$total_items" ]; then
-                    if [ "$choice" -le $(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null) ]; then
+                    if [ "$choice" -le "$(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null)" ]; then
                         current_dir=$(sed -n "${choice}p" "$TMP_DIR"/kindle_folders.list)
                     else
                         file_index=$((choice - $(wc -l <"$TMP_DIR"/kindle_folders.list 2>/dev/null)))

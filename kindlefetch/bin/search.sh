@@ -111,7 +111,7 @@ search_books() {
     # Don't add double quotes around $html_content
     local books
     books="$(
-        echo $html_content | awk '
+        echo "$html_content" | awk '
         BEGIN {
             RS = "<div class=\"flex pt-3 pb-3 border-b last:border-b-0 border-gray-100\">"
             print "["

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 settings_menu() {
     while true; do
@@ -37,7 +37,7 @@ settings_menu() {
         echo ""
         echo -n "Choose option: "
         read -r choice
-        
+
         case "$choice" in
             1)
                 echo -n "Enter your new Kindle downloads directory [It will be $BASE_DIR/your_directory. Only enter your_directory part.]: "

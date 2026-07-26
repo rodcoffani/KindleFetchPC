@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 first_time_setup() {
     clear
@@ -12,7 +12,7 @@ first_time_setup() {
                       | |
                       |_|
 "
-    echo "Welcome to KindleFetch! Let's set up your configuration."
+    echo "Welcome to KindleFetchPC! Let's set up your configuration."
 
     echo -n "Enter your Kindle downloads directory [It will be $BASE_DIR/your_directory. Only enter your_directory part.]: "
     read -r downloads_dir
@@ -21,11 +21,12 @@ first_time_setup() {
         if [ ! -d "$KINDLE_DOCUMENTS" ]; then
             mkdir -p "$KINDLE_DOCUMENTS" || {
                 echo "Failed to create directory $KINDLE_DOCUMENTS" >&2
+                echo "Defaulting to $BASE_DIR/Documents"
                 exit 1
             }
         fi
     else
-        KINDLE_DOCUMENTS="$BASE_DIR/documents"
+        KINDLE_DOCUMENTS="$BASE_DIR/Documents"
     fi
 
     echo -n "Do you want to sign into your zlib account? [Y/n]: "
@@ -33,7 +34,7 @@ first_time_setup() {
     if [ "$zlib_login_choice" = "n" ] || [ "$zlib_login_choice" = "N" ]; then
         ZLIB_AUTH=false
     else
-        [ -z "$ZLIB_URL" ] && ZLIB_URL=$(find_working_url $ZLIB_MIRROR_URLS)
+        [ -z "$ZLIB_URL" ] && ZLIB_URL=$(find_working_url "$ZLIB_MIRROR_URLS")
         save_config
 
         while true; do

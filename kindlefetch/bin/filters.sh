@@ -1,11 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 filters_menu() {
     CURRENT_FILTERS_FILE="$SCRIPT_DIR/tmp/current_filters"
     CURRENT_PARAMS_FILE="$SCRIPT_DIR/tmp/current_filter_params"
 
     local current_tab=1
-    local total_tabs=5
 
     mkdir -p "$SCRIPT_DIR/tmp" 2>/dev/null
 
@@ -41,7 +40,7 @@ filters_menu() {
         echo "│          q - Apply & Exit            │"
         echo "╰──────────────────────────────────────╯"
         echo ""
-        
+
         echo "Active Filters:"
         [ -n "$content_filter" ] && echo "  content: $content_filter"
         [ -n "$ext_filter" ] && echo "  ext: $ext_filter"
@@ -49,7 +48,7 @@ filters_menu() {
         [ -n "$src_filter" ] && echo "  src: $src_filter"
         [ -n "$sort_filter" ] && echo "  sort: $sort_filter"
         echo ""
-        
+
         case $current_tab in
             1) echo "── CONTENT TYPE ────────────────────────"
                echo "1) Nonfiction      5) Comic"
@@ -155,13 +154,13 @@ filters_menu() {
                     echo "sort_filter=\"$sort_filter\""
                 } > "$CURRENT_FILTERS_FILE"
 
-                filter_string=""
-                [ -n "$content_filter" ] && filter_string="${filter_string}&content=$content_filter"
-                [ -n "$ext_filter" ] && filter_string="${filter_string}&ext=$ext_filter"
-                [ -n "$lang_filter" ] && filter_string="${filter_string}&lang=$lang_filter"
-                [ -n "$src_filter" ] && filter_string="${filter_string}&src=$src_filter"
-                [ -n "$sort_filter" ] && filter_string="${filter_string}&sort=$sort_filter"
-                echo "$filter_string" > "$CURRENT_PARAMS_FILE"
+            filter_string=""
+            [ -n "$content_filter" ] && filter_string="${filter_string}&content=$content_filter"
+            [ -n "$ext_filter" ] && filter_string="${filter_string}&ext=$ext_filter"
+            [ -n "$lang_filter" ] && filter_string="${filter_string}&lang=$lang_filter"
+            [ -n "$src_filter" ] && filter_string="${filter_string}&src=$src_filter"
+            [ -n "$sort_filter" ] && filter_string="${filter_string}&sort=$sort_filter"
+            echo "$filter_string" >"$CURRENT_PARAMS_FILE"
 
                 return 0
                 ;;
